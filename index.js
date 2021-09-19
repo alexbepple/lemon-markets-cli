@@ -2,7 +2,8 @@ import got from 'got'
 import * as r from 'ramda'
 
 const isIsin = r.pipe(r.length, r.equals(12))
-const findSide = r.find(r.includes(r.__, ['buy', 'sell']))
+const extractIsin = r.find(isIsin)
+const extractSide = r.find(r.includes(r.__, ['buy', 'sell']))
 
 const msToS = r.pipe(x => x / 1000, x => Math.floor(x))
 const toUnixMs = r.pipe(x => new Date(x), x => x.valueOf())
@@ -17,8 +18,8 @@ const validUntilUnixSeconds = r.pipe(
 
 const order = {
     "valid_until": validUntilUnixSeconds,
-    "side": findSide(process.argv),
-    "isin": r.find(isIsin)(process.argv),
+    "side": extractSide(process.argv),
+    "isin": extractIsin(process.argv),
     "limit_price": 40.7,
     "quantity": 122
 }
