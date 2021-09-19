@@ -5,6 +5,7 @@ const isIsin = r.pipe(r.length, r.equals(12))
 const extractIsin = r.find(isIsin)
 const extractSide = r.find(r.includes(r.__, ['buy', 'sell']))
 const extractLimitPrice = r.pipe(r.find(r.startsWith('@')), r.tail, Number.parseFloat)
+const extractQty = r.pipe(r.find(r.endsWith('x')), r.init, Number.parseFloat)
 
 const msToS = r.pipe(x => x / 1000, x => Math.floor(x))
 const toUnixMs = r.pipe(x => new Date(x), x => x.valueOf())
@@ -22,7 +23,7 @@ const order = {
     "side": extractSide(process.argv),
     "isin": extractIsin(process.argv),
     "limit_price": extractLimitPrice(process.argv),
-    "quantity": 122
+    "quantity": extractQty(process.argv)
 }
 
 const spacesUri = 'https://paper-trading.lemon.markets/rest/v1/spaces'
