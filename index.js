@@ -36,11 +36,13 @@ if (!r.includes('--force')(process.argv)) {
     process.exit(0)
 }
 
+console.log('Submitting order …')
+const reqOptions = {
+    headers: {'Authorization': 'Bearer ' + process.env.LM_TOKEN},
+    json: order
+}
 try {
-    await got.post(url, {
-        headers: {'Authorization' : 'Bearer ' + process.env.LM_TOKEN},
-        json: order
-    }).json()
+    console.log('Response:', await got.post(url, reqOptions).json())
 } catch (err) {
     console.log(err)
 }
