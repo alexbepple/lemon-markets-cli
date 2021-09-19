@@ -1,12 +1,13 @@
 import got from 'got'
 import * as r from 'ramda'
 
+const isIsin = r.pipe(r.length, r.equals(12))
 const findSide = r.find(r.includes(r.__, ['buy', 'sell']))
 
 const order = {
     "valid_until": 1632157200,
     "side": findSide(process.argv),
-    "isin": "DE0005785604",
+    "isin": r.find(isIsin)(process.argv),
     "limit_price": 40.7,
     "quantity": 122
 }
