@@ -5,7 +5,20 @@ const isIsin = r.pipe(r.length, r.equals(12))
 const extractIsin = r.find(isIsin)
 const extractSide = r.find(r.includes(r.__, ['buy', 'sell']))
 const extractLimitPrice = r.pipe(r.find(r.startsWith('@')), r.tail, Number.parseFloat)
-const extractQty = r.pipe(r.find(r.endsWith('x')), r.init, Number.parseFloat)
+
+const isQty = r.endsWith('x');
+const extractQty = r.pipe(r.find(isQty), r.init, Number.parseFloat)
+const isBudget = r.startsWith('=');
+const extractBudget = r.pipe(r.find(isBudget), r.tail, Number.parseFloat)
+const calcQty = r.converge(r.pipe(r.divide, Math.floor), [extractBudget, extractLimitPrice])
+const determineQty = r.cond([
+    [r.any(isQty), extractQty],
+    [r.any(isBudget), calcQty],
+    [r.T, () => {
+        console.error('Cannot determine qty')
+        process.exit(1)
+    }]
+])
 
 const msToS = r.pipe(x => x / 1000, x => Math.floor(x))
 const toUnixMs = r.pipe(x => new Date(x), x => x.valueOf())
@@ -23,7 +36,7 @@ const order = {
     "side": extractSide(process.argv),
     "isin": extractIsin(process.argv),
     "limit_price": extractLimitPrice(process.argv),
-    "quantity": extractQty(process.argv)
+    "quantity": determineQty(process.argv)
 }
 
 const spacesUri = 'https://paper-trading.lemon.markets/rest/v1/spaces'
