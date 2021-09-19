@@ -4,6 +4,7 @@ import * as r from 'ramda'
 const isIsin = r.pipe(r.length, r.equals(12))
 const extractIsin = r.find(isIsin)
 const extractSide = r.find(r.includes(r.__, ['buy', 'sell']))
+const extractLimitPrice = r.pipe(r.find(r.startsWith('@')), r.tail, Number.parseFloat)
 
 const msToS = r.pipe(x => x / 1000, x => Math.floor(x))
 const toUnixMs = r.pipe(x => new Date(x), x => x.valueOf())
@@ -20,7 +21,7 @@ const order = {
     "valid_until": validUntilUnixSeconds,
     "side": extractSide(process.argv),
     "isin": extractIsin(process.argv),
-    "limit_price": 40.7,
+    "limit_price": extractLimitPrice(process.argv),
     "quantity": 122
 }
 
