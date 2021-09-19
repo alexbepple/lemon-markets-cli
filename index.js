@@ -44,5 +44,5 @@ const reqOptions = {
 try {
     console.log('Response:', await got.post(url, reqOptions).json())
 } catch (err) {
-    console.log(err)
+    console.error('❌ Request rejected: ', JSON.parse(err.response.body))
 }
