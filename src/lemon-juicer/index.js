@@ -19,3 +19,26 @@ export const submitOrder = async (order) => {
     }
     return got.post(url, reqOptions).json()
 }
+
+const fetchOrders = (status) => () => {
+    const reqOptions = {
+        headers: {'Authorization': 'Bearer ' + process.env.LM_TOKEN},
+        searchParams: {status}
+    }
+    return got.get(url, reqOptions).json()
+        .then(r.prop('results'))
+}
+
+export const fetchActivatedOrders = fetchOrders('activated')
+export const fetchInactiveOrders = fetchOrders('inactive')
+export const fetchOpenOrders = r.pipe(
+    () => Promise.all([fetchActivatedOrders(), fetchInactiveOrders()]),
+    r.andThen(r.apply(r.concat))
+)
+
+export const deleteOrder = async (order) => {
+    const reqOptions = {
+        headers: {'Authorization': 'Bearer ' + process.env.LM_TOKEN}
+    }
+    return got.delete(r.join('/')([url, order.uuid]) , reqOptions)
+}

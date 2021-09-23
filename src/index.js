@@ -1,7 +1,19 @@
 import * as r from 'ramda'
 import {determineQty, extractIsin, extractLimitPrice, extractSide} from "./cli-input.js";
 import {getUnixSecondsIn22Hours} from "./date.js";
-import {createLimitOrder, submitOrder} from "./lemon-juicer/index.js";
+import {createLimitOrder, deleteOrder, fetchOpenOrders, submitOrder} from "./lemon-juicer/index.js";
+
+if (r.includes('list-open')(process.argv)) {
+    console.log(await fetchOpenOrders())
+    process.exit(0)
+}
+
+if (r.includes('delete-open')(process.argv)) {
+    const openOrders = await fetchOpenOrders()
+    console.log(`Deleting ${r.length(openOrders)} orders …`)
+    await Promise.all(r.map(deleteOrder)(openOrders))
+    process.exit(0)
+}
 
 const lmOrder = createLimitOrder({
     validUntil: getUnixSecondsIn22Hours(),
