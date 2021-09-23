@@ -1,20 +1,10 @@
 import got from 'got'
 import * as r from 'ramda'
 import {determineQty, extractIsin, extractLimitPrice, extractSide} from "./cli-input.js";
-
-const msToS = r.pipe(x => x / 1000, x => Math.floor(x))
-const toUnixMs = r.pipe(x => new Date(x), x => x.valueOf())
-const hToMs = x => x * 60 * 60 * 1000
-const validUntilUnixSeconds = r.pipe(
-    // so, this is quite painful :-(((
-    // date-fns – does not work with Node ESM
-    // @js-temporal/polyfill – was not workable
-    // maybe Luxon?
-    () => new Date(), toUnixMs, ms => ms + hToMs(22), toUnixMs, msToS
-)()
+import {getUnixSecondsIn22Hours} from "./date.js";
 
 const order = {
-    "valid_until": validUntilUnixSeconds,
+    "valid_until": getUnixSecondsIn22Hours(),
     "side": extractSide(process.argv),
     "isin": extractIsin(process.argv),
     "limit_price": extractLimitPrice(process.argv),
