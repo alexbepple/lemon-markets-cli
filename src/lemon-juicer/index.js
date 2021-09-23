@@ -10,14 +10,14 @@ export const createLimitOrder = r.applySpec({
 })
 
 const spacesUri = 'https://paper-trading.lemon.markets/rest/v1/spaces'
-const url = r.join('/')([spacesUri, process.env.SPACE_ID, 'orders'])
+const ordersResource = r.join('/')([spacesUri, process.env.SPACE_ID, 'orders'])
 
 export const submitOrder = async (order) => {
     const reqOptions = {
         headers: {'Authorization': 'Bearer ' + process.env.LM_TOKEN},
         json: order
     }
-    return got.post(url, reqOptions).json()
+    return got.post(ordersResource, reqOptions).json()
 }
 
 const fetchOrders = (status) => () => {
@@ -25,7 +25,7 @@ const fetchOrders = (status) => () => {
         headers: {'Authorization': 'Bearer ' + process.env.LM_TOKEN},
         searchParams: {status}
     }
-    return got.get(url, reqOptions).json()
+    return got.get(ordersResource, reqOptions).json()
         .then(r.prop('results'))
 }
 
@@ -40,12 +40,12 @@ export const deleteOrder = async (order) => {
     const reqOptions = {
         headers: {'Authorization': 'Bearer ' + process.env.LM_TOKEN}
     }
-    return got.delete(r.join('/')([url, order.uuid]) , reqOptions)
+    return got.delete(r.join('/')([ordersResource, order.uuid]) , reqOptions)
 }
 
 export const activateOrder = async (order) => {
     const reqOptions = {
         headers: {'Authorization': 'Bearer ' + process.env.LM_TOKEN}
     }
-    return got.put(r.join('/')([url, order.uuid, 'activate']) , reqOptions)
+    return got.put(r.join('/')([ordersResource, order.uuid, 'activate']) , reqOptions)
 }
