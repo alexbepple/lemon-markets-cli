@@ -1,7 +1,14 @@
 import * as r from 'ramda'
 import {determineQty, extractIsin, extractLimitPrice, extractSide} from "./cli-input.js";
 import {getUnixSecondsIn22Hours} from "./date.js";
-import {createLimitOrder, deleteOrder, fetchOpenOrders, submitOrder} from "./lemon-juicer/index.js";
+import {
+    activateOrder,
+    createLimitOrder,
+    deleteOrder,
+    fetchInactiveOrders,
+    fetchOpenOrders,
+    submitOrder
+} from "./lemon-juicer/index.js";
 
 if (r.includes('list-open')(process.argv)) {
     console.log(await fetchOpenOrders())
@@ -12,6 +19,13 @@ if (r.includes('delete-open')(process.argv)) {
     const openOrders = await fetchOpenOrders()
     console.log(`Deleting ${r.length(openOrders)} orders …`)
     await Promise.all(r.map(deleteOrder)(openOrders))
+    process.exit(0)
+}
+
+if (r.includes('activate-all')(process.argv)) {
+    const inactiveOrders = await fetchInactiveOrders()
+    console.log(`Activating ${r.length(inactiveOrders)} orders …`)
+    await Promise.all(r.map(activateOrder)(inactiveOrders))
     process.exit(0)
 }
 

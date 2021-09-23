@@ -42,3 +42,10 @@ export const deleteOrder = async (order) => {
     }
     return got.delete(r.join('/')([url, order.uuid]) , reqOptions)
 }
+
+export const activateOrder = async (order) => {
+    const reqOptions = {
+        headers: {'Authorization': 'Bearer ' + process.env.LM_TOKEN}
+    }
+    return got.put(r.join('/')([url, order.uuid, 'activate']) , reqOptions)
+}
