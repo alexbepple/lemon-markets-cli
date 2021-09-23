@@ -1,20 +1,17 @@
-import got from 'got'
 import * as r from 'ramda'
 import {determineQty, extractIsin, extractLimitPrice, extractSide} from "./cli-input.js";
 import {getUnixSecondsIn22Hours} from "./date.js";
+import {createLimitOrder, submitOrder} from "./lemon-juicer/index.js";
 
-const order = {
-    "valid_until": getUnixSecondsIn22Hours(),
-    "side": extractSide(process.argv),
-    "isin": extractIsin(process.argv),
-    "limit_price": extractLimitPrice(process.argv),
-    "quantity": determineQty(process.argv)
-}
+const lmOrder = createLimitOrder({
+    validUntil: getUnixSecondsIn22Hours(),
+    side: extractSide(process.argv),
+    isin: extractIsin(process.argv),
+    limitPrice: extractLimitPrice(process.argv),
+    quantity: determineQty(process.argv)
+})
 
-const spacesUri = 'https://paper-trading.lemon.markets/rest/v1/spaces'
-const url = r.join('/')([spacesUri, process.env.SPACE_ID, 'orders'])
-
-console.log('Order:', order)
+console.log('Order:', lmOrder)
 
 if (!r.includes('--force')(process.argv)) {
     console.log()
@@ -23,12 +20,8 @@ if (!r.includes('--force')(process.argv)) {
 }
 
 console.log('Submitting order …')
-const reqOptions = {
-    headers: {'Authorization': 'Bearer ' + process.env.LM_TOKEN},
-    json: order
-}
 try {
-    console.log('Response:', await got.post(url, reqOptions).json())
+    console.log('Response:', await submitOrder(lmOrder))
 } catch (err) {
     console.error('❌ Request rejected: ', JSON.parse(err.response.body))
 }
