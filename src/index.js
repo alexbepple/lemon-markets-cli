@@ -23,15 +23,11 @@ const lmOrder = createLimitOrder({
     quantity: determineQty(process.argv)
 })
 
-console.log('Order:', lmOrder)
-
-if (!r.includes('--force')(process.argv)) {
-    console.log()
-    console.log('Include --force to actually submit order')
+if (r.includes('--preview')(process.argv)) {
+    console.log('Order that would be submitted:', lmOrder)
     process.exit(0)
 }
 
-console.log('Submitting order …')
 try {
     console.log('Response:', await submitOrder(lmOrder))
 } catch (err) {
