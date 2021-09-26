@@ -1,8 +1,10 @@
 import * as r from "ramda";
 
+const SIDE = {buy: 'buy', sell: 'sell'}
+
 const isIsin = r.pipe(r.length, r.equals(12))
 export const extractIsin = r.find(isIsin)
-export const extractSide = r.find(r.includes(r.__, ['buy', 'sell']))
+export const extractSide = r.find(r.includes(r.__, r.values(SIDE)))
 export const extractLimitPrice = r.pipe(r.find(r.startsWith('@')), r.tail, Number.parseFloat)
 
 const isQty = r.endsWith('x');
@@ -19,6 +21,6 @@ export const determineQty = r.cond([
     }]
 ])
 export const shallSellAll = r.allPass([
-    r.pipe(extractSide, r.equals('sell')), // todo: extract constant
+    r.pipe(extractSide, r.equals(SIDE.sell)),
     r.includes('all')
 ])
