@@ -1,26 +1,36 @@
-import * as r from "ramda";
+import * as r from 'ramda'
 
-const SIDE = {buy: 'buy', sell: 'sell'}
+const SIDE = { buy: 'buy', sell: 'sell' }
 
 const isIsin = r.pipe(r.length, r.equals(12))
 export const extractIsin = r.find(isIsin)
 export const extractSide = r.find(r.includes(r.__, r.values(SIDE)))
-export const extractLimitPrice = r.pipe(r.find(r.startsWith('@')), r.tail, Number.parseFloat)
+export const extractLimitPrice = r.pipe(
+  r.find(r.startsWith('@')),
+  r.tail,
+  Number.parseFloat
+)
 
-const isQty = r.endsWith('x');
+const isQty = r.endsWith('x')
 const extractQty = r.pipe(r.find(isQty), r.init, Number.parseFloat)
-const isBudget = r.startsWith('=');
+const isBudget = r.startsWith('=')
 const extractBudget = r.pipe(r.find(isBudget), r.tail, Number.parseFloat)
-const calcQty = r.converge(r.pipe(r.divide, Math.floor), [extractBudget, extractLimitPrice])
+const calcQty = r.converge(r.pipe(r.divide, Math.floor), [
+  extractBudget,
+  extractLimitPrice,
+])
 export const determineQty = r.cond([
-    [r.any(isQty), extractQty],
-    [r.any(isBudget), calcQty],
-    [r.T, () => {
-        console.error('Cannot determine qty')
-        process.exit(1)
-    }]
+  [r.any(isQty), extractQty],
+  [r.any(isBudget), calcQty],
+  [
+    r.T,
+    () => {
+      console.error('Cannot determine qty')
+      process.exit(1)
+    },
+  ],
 ])
 export const shallSellAll = r.allPass([
-    r.pipe(extractSide, r.equals(SIDE.sell)),
-    r.includes('all')
+  r.pipe(extractSide, r.equals(SIDE.sell)),
+  r.includes('all'),
 ])
