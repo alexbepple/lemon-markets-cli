@@ -18,3 +18,7 @@ export const determineQty = r.cond([
         process.exit(1)
     }]
 ])
+export const shallSellAll = r.allPass([
+    r.pipe(extractSide, r.equals('sell')), // todo: extract constant
+    r.includes('all')
+])

@@ -11,6 +11,7 @@ export const createLimitOrder = r.applySpec({
 
 const spacesUri = 'https://paper-trading.lemon.markets/rest/v1/spaces'
 const ordersResource = r.join('/')([spacesUri, process.env.SPACE_ID, 'orders'])
+const portfolioResource = r.join('/')([spacesUri, process.env.SPACE_ID, 'portfolio']) // todo: dry
 
 const defaultOptions = {headers: {'Authorization': 'Bearer ' + process.env.LM_TOKEN}}
 
@@ -39,3 +40,16 @@ export const deleteOrder = async (order) => {
 export const activateOrder = async (order) => {
     return got.put(r.join('/')([ordersResource, order.uuid, 'activate']) , defaultOptions)
 }
+
+export const fetchPortfolio = () =>
+    got.get(portfolioResource, defaultOptions)
+        .json()
+        .then(r.prop('results'))
+
+export const fetchPortfolioQty = (isin) => r.pipe(
+    fetchPortfolio,
+    r.andThen(r.pipe(
+        r.find(r.pipe(r.path(['instrument', 'isin']), r.equals(isin))),
+        r.prop('quantity')
+    ))
+)()

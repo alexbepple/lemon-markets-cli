@@ -1,17 +1,22 @@
 import * as r from 'ramda'
-import {determineQty, extractIsin, extractLimitPrice, extractSide} from "./cli-input.js";
+import {determineQty, extractIsin, extractLimitPrice, extractSide, shallSellAll} from "./cli-input.js";
 import {getUnixSecondsIn22Hours} from "./date.js";
 import {
     activateOrder,
     createLimitOrder,
     deleteOrder,
     fetchInactiveOrders,
-    fetchOpenOrders,
+    fetchOpenOrders, fetchPortfolio, fetchPortfolioQty,
     submitOrder
 } from "./lemon-juicer/index.js";
 
 if (r.includes('list-open')(process.argv)) {
     console.log(await fetchOpenOrders())
+    process.exit(0)
+}
+
+if (r.includes('show-portfolio')(process.argv)) {
+    console.log(await fetchPortfolio())
     process.exit(0)
 }
 
@@ -34,7 +39,9 @@ const lmOrder = createLimitOrder({
     side: extractSide(process.argv),
     isin: extractIsin(process.argv),
     limitPrice: extractLimitPrice(process.argv),
-    quantity: determineQty(process.argv)
+    quantity: shallSellAll(process.argv)
+        ?  await fetchPortfolioQty(extractIsin(process.argv))
+        : determineQty(process.argv)
 })
 
 if (r.includes('--preview')(process.argv)) {
