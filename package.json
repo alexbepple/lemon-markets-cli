@@ -1,9 +1,17 @@
 {
+  "scripts": {
+    "prepare": "husky install"
+  },
+  "lint-staged": {
+    "*.{js,css,md}": "prettier --write"
+  },
   "dependencies": {
     "got": "^11.8.2",
     "ramda": "^0.27.1"
   },
   "devDependencies": {
+    "husky": ">=6",
+    "lint-staged": ">=10",
     "prettier": "^2.4.1"
   },
   "type": "module",
