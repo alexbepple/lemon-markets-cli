@@ -17,6 +17,16 @@ import {
   fetchPortfolioQty,
   submitOrder,
 } from './lemon-juicer/index.js'
+import * as fs from 'fs/promises'
+
+if (r.includes('read-traderama-orders')(process.argv)) {
+  await fs
+    .readFile(r.last(process.argv))
+    .then(
+      r.pipe(JSON.parse, r.prop('dataText'), r.map(r.map(r.head)), console.log)
+    )
+  process.exit(0)
+}
 
 if (r.includes('list-open')(process.argv)) {
   const propsIrrelevantForOpen = [
