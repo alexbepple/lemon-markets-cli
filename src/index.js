@@ -19,7 +19,24 @@ import {
 } from './lemon-juicer/index.js'
 
 if (r.includes('list-open')(process.argv)) {
-  console.log(await fetchOpenOrders())
+  const propsIrrelevantForOpen = [
+    'processed_at',
+    'processed_quantity',
+    'average_price',
+  ]
+  const propsNotInterestingForMe = [
+    'uuid',
+    'trading_venue_mic',
+    'created_at',
+    'stop_price',
+    'type',
+  ]
+  await fetchOpenOrders().then(
+    r.pipe(
+      r.map(r.omit(r.concat(propsIrrelevantForOpen, propsNotInterestingForMe))),
+      console.log
+    )
+  )
   process.exit(0)
 }
 
