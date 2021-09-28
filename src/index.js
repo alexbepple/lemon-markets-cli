@@ -34,6 +34,7 @@ if (r.includes('list-open')(process.argv)) {
   await fetchOpenOrders().then(
     r.pipe(
       r.map(r.omit(r.concat(propsIrrelevantForOpen, propsNotInterestingForMe))),
+      r.sort(r.ascend(r.path(['instrument', 'title']))),
       console.log
     )
   )
