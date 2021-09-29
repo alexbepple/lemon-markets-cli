@@ -17,7 +17,10 @@ export const listOpenLemonOrders = async () => {
   await fetchOpenOrders().then(
     r.pipe(
       r.map(r.omit(r.concat(propsIrrelevantForOpen, propsNotInterestingForMe))),
-      r.sort(r.ascend(r.path(['instrument', 'title']))),
+      r.sortWith([
+        r.ascend(r.prop('side')),
+        r.ascend(r.path(['instrument', 'title'])),
+      ]),
       console.log
     )
   )
