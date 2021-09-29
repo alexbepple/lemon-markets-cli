@@ -14,7 +14,7 @@ export const extractLimitPrice = r.pipe(
 const isQty = r.endsWith('x')
 const extractQty = r.pipe(r.find(isQty), r.init, Number.parseFloat)
 const isBudget = r.startsWith('=')
-const extractBudget = r.pipe(r.find(isBudget), r.tail, Number.parseFloat)
+export const extractBudget = r.pipe(r.find(isBudget), r.tail, Number.parseFloat)
 const calcQty = r.converge(r.pipe(r.divide, Math.floor), [
   extractBudget,
   extractLimitPrice,
