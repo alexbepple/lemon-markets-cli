@@ -18,6 +18,7 @@ import {
   submitOrder,
 } from './lemon-juicer/index.js'
 import { readTraderamaOrders } from './cli-command/index.js'
+import { listOpenLemonOrders } from './cli-command/index.js'
 
 if (r.includes('read-traderama-orders')(process.argv)) {
   await readTraderamaOrders()
@@ -25,25 +26,7 @@ if (r.includes('read-traderama-orders')(process.argv)) {
 }
 
 if (r.includes('list-open')(process.argv)) {
-  const propsIrrelevantForOpen = [
-    'processed_at',
-    'processed_quantity',
-    'average_price',
-  ]
-  const propsNotInterestingForMe = [
-    'uuid',
-    'trading_venue_mic',
-    'created_at',
-    'stop_price',
-    'type',
-  ]
-  await fetchOpenOrders().then(
-    r.pipe(
-      r.map(r.omit(r.concat(propsIrrelevantForOpen, propsNotInterestingForMe))),
-      r.sort(r.ascend(r.path(['instrument', 'title']))),
-      console.log
-    )
-  )
+  await listOpenLemonOrders()
   process.exit(0)
 }
 
