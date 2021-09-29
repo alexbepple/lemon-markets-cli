@@ -17,27 +17,10 @@ import {
   fetchPortfolioQty,
   submitOrder,
 } from './lemon-juicer/index.js'
-import * as fs from 'fs/promises'
+import { readTraderamaOrders } from './cli-command/index.js'
 
 if (r.includes('read-traderama-orders')(process.argv)) {
-  const row2TxtOrder = r.pipe(
-    r.map(r.head),
-    r.converge(r.unapply(r.join(' ')), [
-      r.pipe(r.nth(1), r.replace('limit sell', 'sell all')),
-      r.nth(3),
-      r.pipe(r.nth(4), r.concat('@')),
-    ])
-  )
-  await fs
-    .readFile(r.last(process.argv))
-    .then(
-      r.pipe(
-        JSON.parse,
-        r.prop('dataText'),
-        r.map(row2TxtOrder),
-        r.forEach(console.log)
-      )
-    )
+  await readTraderamaOrders()
   process.exit(0)
 }
 
