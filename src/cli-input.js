@@ -7,8 +7,7 @@ export const extractIsin = r.find(isIsin)
 export const extractSide = r.find(r.includes(r.__, r.values(SIDE)))
 export const extractLimitPrice = r.pipe(
   r.find(r.startsWith('@')),
-  r.tail,
-  Number.parseFloat
+  r.unless(r.isNil)(r.pipe(r.tail, Number.parseFloat))
 )
 
 const isQty = r.endsWith('x')

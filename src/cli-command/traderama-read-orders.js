@@ -2,6 +2,12 @@ import * as r from 'ramda'
 import fs from 'fs/promises'
 import { extractBudget } from '../cli-input.js'
 
+/*
+ Supported order types:
+ * buy limit
+ * sell limit
+ * sell market
+ */
 export const readTraderamaOrders = async () => {
   const row2TxtOrder = r.pipe(
     r.map(r.head),
@@ -12,7 +18,7 @@ export const readTraderamaOrders = async () => {
         r.replace(/limit buy/i, 'buy =' + extractBudget(process.argv))
       ),
       r.nth(3),
-      r.pipe(r.nth(4), r.concat('@')),
+      r.pipe(r.nth(4), r.concat('@'), r.replace('@0.0', '')),
     ])
   )
   await fs
